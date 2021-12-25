@@ -1,7 +1,8 @@
+#pragma warning(disable:4996)
 #include <stdio.h>
 
 void Extract(char* arcname) {
-    FILE* arch = fopen(arcname, "rb+wb");
+    FILE* arch = fopen(arcname, "rb");
     unsigned long long int  now_position = 0;
     unsigned long long int  start_position = 0;
     int c;
@@ -46,19 +47,19 @@ void Create(char* arcname, int filecount, char* files[]) {
     FILE* arcfile = fopen(arcname, "wb");
     FILE* file;
     unsigned long long int nameandsize[128];
-    for (i = 5; i < filecount; i++) {
+    for (i = 4; i < filecount; i++) {
         file = fopen(files[i], "rb");
         if (file == NULL)
             continue;
         fseek(file, 0, SEEK_END);
-        nameandsize[i - 5] = ftell(file);
+        nameandsize[i - 4] = ftell(file);
         fseek(file, 0, SEEK_SET);
         fclose(file);
     }
-    for (i = 0; i < filecount - 5; i++)
-        fprintf(arcfile, "< %s : %llu >", files[i + 5], nameandsize[i]);
+    for (i = 0; i < filecount - 4; i++)
+        fprintf(arcfile, "< %s : %llu >", files[i + 4], nameandsize[i]);
     fprintf(arcfile, "\n");
-    for (i = 5; i < filecount; i++) {
+    for (i = 4; i < filecount; i++) {
         file = fopen(files[i], "rb");
         if (file == NULL) {
             printf("File not added. ERROR. You're trying use a non-existent file\n");
@@ -74,10 +75,10 @@ void Create(char* arcname, int filecount, char* files[]) {
     printf("\n + Zipping sucssess + \n");
 }
 
-int main(int argc, char* argv[]) {
+int main(int* argc, char* argv[]) {
     FILE* arcfile;
     int i;
-    char* arcname;
+    char* arcname = 0;
     printf("\n");
     for (i = 0; i < argc; i++) {
         if (!strcmp("--file", argv[i])) {
